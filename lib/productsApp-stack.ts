@@ -3,7 +3,7 @@ import { Runtime } from 'aws-cdk-lib/aws-lambda'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { Construct } from 'constructs'
 
-export class ProductsApp extends Stack {
+export class ProductsAppStack extends Stack {
   readonly productsFetchHandler: NodejsFunction
   
   constructor(scope: Construct, id: string, props?: StackProps) {
