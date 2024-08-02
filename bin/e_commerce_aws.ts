@@ -5,7 +5,7 @@ import { ProductsAppStack } from '../lib/productsApp-stack'
 import { ECommerceApiStack } from '../lib/ecommerceApi-stack'
 
 const env: Environment = {
-  account: '',
+  account: '975050189131',
   region: 'us-east-1'
 }
 const tags = {
