@@ -1,7 +1,8 @@
 import { Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib'
 import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb'
-import { Runtime } from 'aws-cdk-lib/aws-lambda'
+import { LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
+import { StringParameter } from 'aws-cdk-lib/aws-ssm'
 import { Construct } from 'constructs'
 
 export class ProductsAppStack extends Stack {
@@ -23,6 +24,10 @@ export class ProductsAppStack extends Stack {
       readCapacity: 1,
       writeCapacity: 1
     })
+
+    const productsLayerArn = StringParameter.valueForStringParameter(this, 'ProductsLayerVersionArn')
+    const productsLayer = LayerVersion.fromLayerVersionArn(this, 'ProductsLayerVersionArn', productsLayerArn)
+
     this.productsFetchHandler = new NodejsFunction(this, "ProductsFetchFunction", {
       functionName: "ProductsFetchFunction",
       entry: 'lambda/products/productsFetchFunction.ts',
@@ -36,7 +41,8 @@ export class ProductsAppStack extends Stack {
       },
       environment: {
         PRODUCTS_DDB: this.productsDdb.tableName
-      }
+      },
+      layers: [productsLayer]
     })
     this.productsDdb.grantReadData(this.productsFetchHandler)
 
@@ -53,7 +59,8 @@ export class ProductsAppStack extends Stack {
       },
       environment: {
         PRODUCTS_DDB: this.productsDdb.tableName
-      }
+      },
+      layers: [productsLayer]
     })
     this.productsDdb.grantWriteData(this.productsAdminHandler)
   }
